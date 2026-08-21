@@ -2,7 +2,7 @@ from balrog.client import create_llm_client
 
 from ..prompt_builder import create_prompt_builder
 from .chain_of_thought import ChainOfThoughtAgent
-from .custom import CustomAgent
+# from .custom import CustomAgent
 from .dummy import DummyAgent
 from .few_shot import FewShotAgent
 from .naive import NaiveAgent
@@ -49,7 +49,8 @@ class AgentFactory:
         elif self.config.agent.type == "dummy":
             return DummyAgent(client_factory, prompt_builder)
         elif self.config.agent.type == "custom":
-            return CustomAgent(client_factory, prompt_builder)
+            from .custom import CustomAgent     # remove circular import
+            return CustomAgent(client_factory, prompt_builder, config=self.config)
         elif self.config.agent.type == "few_shot":
             return FewShotAgent(client_factory, prompt_builder, self.config.agent.max_icl_history)
         elif self.config.agent.type == "robust_naive":

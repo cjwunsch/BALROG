@@ -584,9 +584,17 @@ class ClaudeWrapper(LLMClientWrapper):
 
         response = self.execute_with_retries(api_call)
 
+        text_parts = [
+            block.text
+            for block in response.content
+            if getattr(block, "type", None) == "text"
+        ]
+
+        completion = "\n".join(text_parts).strip()
+
         return LLMResponse(
             model_id=self.model_id,
-            completion=response.content[0].text.strip(),
+            completion=completion,
             stop_reason=response.stop_reason,
             input_tokens=response.usage.input_tokens,
             output_tokens=response.usage.output_tokens,
